@@ -2,10 +2,10 @@ var mysql = require("mysql");
 var inquirer = require("inquirer");
 
 var connection = mysql.createConnection({
-    host: "localhost",
+    host: "192.168.99.100",
     port: "3306",
     user: "root",
-    password: "",
+    password: "docker",
     database: "bamazon_DB"
 });
 
@@ -26,9 +26,7 @@ function start() {
         console.log("price: $" + res[i].price)
     }
         bamazonQuestions();
-})
-    
-      
+})    
     };
 
 function bamazonQuestions(){
@@ -36,20 +34,20 @@ function bamazonQuestions(){
         .prompt([
         {
             type: "input",
-            name: "askID",
+            name: "id",
             message: "what is the ID of the item would you like to buy?",
             validate: function(value) {
                 if (isNaN(value) === false) {
                     return true;
                 } else {
-                    console.log('\nPlease enter a valid item ID.');
+                    console.log("Please enter a valid item ID");
                     return false;
                 }
             }
         },
         {
-            type: "number",
-            name: "askAmount",
+            type: "input",
+            name: "quantity",
             message: "what quantity of the item would you like to buy?",
             validate: function(value) {
                 if (isNaN(value) === false) {
@@ -60,11 +58,35 @@ function bamazonQuestions(){
                 }
             }
         }
-        ]).then(answers => {
+        ]).then(function(answer) {
+        connection.query("SELECT  * FROM products WHERE ?", {item_id: answer.id}, function (err, res) {
+          if (err) throw err;
+            console.log("res", res)
+            console.log("quantity",answer.quantity) 
+            console.log("stock", res[0].stock_quantity);
+          if (answer.quantity > res[0].stock_quantity){
+              console.log("!")
+            inquirer
+            .prompt([
+              {
+                type: "input",
+                message: "Out of Stock. Would you like to try a different order?",
+                name: "continue"
+              }
+             ]).then(function(answer){
+                if(answer.continue == 'yes' || answer.continue == 'y') {
+                bamazonQuestions();
 
+                } else if (totalCost >= 0) {
+                  console.log("Okay, Total to pay is ", parseFloat(Math.round(totalCost * 100) / 100));
+                  connection.end();
+
+                } else {
+                  console.log("See you soon!");
+                }
+              });
+              
+          }
 
         });
-
-
-
-}
+        })};
