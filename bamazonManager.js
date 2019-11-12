@@ -55,8 +55,63 @@ function manager(){
                     connection.end();
                     break;
             }
-
-
-        })
+        });
 };
 
+        function viewProducts(){
+            connection.query("SELECT * FROM products", function(err, res) {
+                if (err) throw err;
+                console.log("ANSWER:", res);
+                for (var i = 0; i < res.length; i++) {
+                  console.log(" - - MANAGER MENU -  - ")
+                  console.log("item id: " + res[i].item_id);
+                  console.log("item: " + res[i].product_name);
+                  console.log("price: $" + res[i].price);
+                  console.log("stock quantity: " + res[i].stock_quantity);
+              };
+                  bamazonQuestions();
+          });
+        };
+
+        function viewLow(){
+            connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, res) {
+                if (err) throw err;
+                console.log("ANSWER:", res)
+                for (var i = 0; i < res.length; i++) {
+                  console.log(" - - - - - - - - - - - - - - - ");
+                  console.log("item id: " + res[i].item_id);
+                  console.log("item: " + res[i].product_name);
+                  console.log("price: $" + res[i].price);
+                  console.log("stock quantity: " + res[i].stock_quantity);
+              }
+                  bamazonQuestions();
+          })
+        };
+
+        function addInventory(){
+            inquirer    
+            .prompt([{
+                message: "What item ID would you like to add to?",
+                name: "manageradd",
+                type:"input"
+            },
+            {
+                message: "What quantity amount would you like to add?",
+                name: "managerquantity",
+                type:"input",
+                validate: function(value) {
+                    if (isNaN(value) === false) {
+                        return true;
+                    } else {
+                        console.log('/n Please enter a valid quantity number');
+                        return false;
+                    }
+                }
+            }]).then(function(answer){
+
+                connection.query("SELECT stock_quantity FROM products WHERE ?", {item_id: answer.manageradd}, function (err, res) {
+                    if (err) throw err;
+                });
+
+        }    
+};
