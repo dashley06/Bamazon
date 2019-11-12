@@ -1,6 +1,8 @@
+//npm modules
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
+//local connection parameters
 var connection = mysql.createConnection({
     host: "192.168.99.100",
     port: "3306",
@@ -9,12 +11,14 @@ var connection = mysql.createConnection({
     database: "bamazon_DB"
 });
 
+//establish connection
 connection.connect(function(err){
     if (err) throw err;
     console.log("Connected!")
     start();
 });
 
+//start function to show inventory in log
 function start() {
     connection.query("SELECT * FROM products", function(err, res) {
       if (err) throw err;
@@ -29,6 +33,7 @@ function start() {
 })    
     };
 
+//initial inquirer prompt questions
 function bamazonQuestions(){
     inquirer
         .prompt([
@@ -53,19 +58,25 @@ function bamazonQuestions(){
                 if (isNaN(value) === false) {
                     return true;
                 } else {
-                    console.log('\nPlease enter a valid quantity number');
+                    console.log('/n Please enter a valid quantity number');
                     return false;
                 }
             }
         }
         ]).then(function(answer) {
-        connection.query("SELECT  * FROM products WHERE ?", {item_id: answer.id}, function (err, res) {
+
+        //query the user inputs from prompt questions
+      connection.query("SELECT  * FROM products WHERE ?", {item_id: answer.id}, function (err, res) {
           if (err) throw err;
-            console.log("res", res)
-            console.log("quantity",answer.quantity) 
-            console.log("stock", res[0].stock_quantity);
-          if (answer.quantity > res[0].stock_quantity){
-              console.log("!")
+        
+        //converting string to integer
+          var quantity = parseInt(answer.quantity);
+
+          if (res[0].stock_quantity >= quantity) {    
+            console.log("Okay, your total to pay is = $" + parseFloat(res[0].price * quantity));         
+          } 
+      
+          if (res[0].stock_quantity < quantity){
             inquirer
             .prompt([
               {
@@ -74,19 +85,12 @@ function bamazonQuestions(){
                 name: "continue"
               }
              ]).then(function(answer){
-                if(answer.continue == 'yes' || answer.continue == 'y') {
-                bamazonQuestions();
-
-                } else if (totalCost >= 0) {
-                  console.log("Okay, Total to pay is ", parseFloat(Math.round(totalCost * 100) / 100));
-                  connection.end();
-
-                } else {
-                  console.log("See you soon!");
-                }
+                if (answer.continue == 'yes' || answer.continue == 'y') {
+                     bamazonQuestions();
+                } 
               });
-              
-          }
+              connection.end();
+        }    
+      })})};
 
-        });
-        })};
+        
