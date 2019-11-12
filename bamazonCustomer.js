@@ -25,9 +25,10 @@ function start() {
 
       for (var i = 0; i < res.length; i++) {
         console.log(" - - - - - - - - - - - - - - - ")
-        console.log("item id: " + res[i].item_id)
-        console.log("item: " + res[i].product_name)
-        console.log("price: $" + res[i].price)
+        console.log("item id: " + res[i].item_id);
+        console.log("item: " + res[i].product_name);
+        console.log("price: $" + res[i].price);
+        console.log("stock quantity: " + res[i].stock_quantity);
     }
         bamazonQuestions();
 })    
@@ -74,7 +75,16 @@ function bamazonQuestions(){
 
           if (res[0].stock_quantity >= quantity) {    
             console.log("Okay, your total to pay is = $" + parseFloat(res[0].price * quantity));         
-          } 
+            
+            var updatedQuantity = res[0].stock_quantity - quantity;
+         
+            connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity: updatedQuantity},{item_id:answer.id} ], function(err,res){
+                if (err) throw err;
+                console.log("Updated quantity for item number" + " " + answer.id + " " + "is " + updatedQuantity);
+                console.log("Thank you for shopping! Please come again!");
+                connection.end();
+            })
+        } 
       
           if (res[0].stock_quantity < quantity){
             inquirer
@@ -89,7 +99,7 @@ function bamazonQuestions(){
                      bamazonQuestions();
                 } 
               });
-              connection.end();
+              
         }    
       })})};
 
