@@ -1,14 +1,3 @@
-// Create a new Node application called `bamazonManager.js`. Running this application will:
-//     * List a set of menu options:
-//   * View Products for Sale
-//   * View Low Inventory
-//   * Add to Inventory
-//   * Add New Product
-// * If a manager selects `View Products for Sale`, the app should list every available item: the item IDs, names, prices, and quantities.
-// * If a manager selects `View Low Inventory`, then it should list all items with an inventory count lower than five.
-// * If a manager selects `Add to Inventory`, your app should display a prompt that will let the manager "add more" of any item currently in the store.
-// * If a manager selects `Add New Product`, it should allow the manager to add a completely new product to the store.
-
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 
@@ -69,7 +58,6 @@ function manager(){
                   console.log("price: $" + res[i].price);
                   console.log("stock quantity: " + res[i].stock_quantity);
               };
-                  bamazonQuestions();
           });
         };
 
@@ -84,7 +72,6 @@ function manager(){
                   console.log("price: $" + res[i].price);
                   console.log("stock quantity: " + res[i].stock_quantity);
               }
-                  bamazonQuestions();
           })
         };
 
@@ -103,15 +90,76 @@ function manager(){
                     if (isNaN(value) === false) {
                         return true;
                     } else {
-                        console.log('/n Please enter a valid quantity number');
+                        console.log('Please enter a valid quantity number');
                         return false;
                     }
                 }
             }]).then(function(answer){
+             
+            connection.query("SELECT stock_quantity FROM products WHERE ?", {item_id: answer.manageradd}, function(err,res){
+                            if (err) throw err;
 
-                connection.query("SELECT stock_quantity FROM products WHERE ?", {item_id: answer.manageradd}, function (err, res) {
-                    if (err) throw err;
+                        // console.log("manager add answer",answer);
+                        // console.log("manager add res", res);
+            
+                            var newquantity = parseInt(answer.managerquantity) + res[0].stock_quantity;
+                          //  console.log(newquantity);
+
+            connection.query("UPDATE products SET ? WHERE ?", [{stock_quantity:newquantity}, {item_id: answer.manageradd}], function(err,res){
+                if (err) throw err;
+                console.log("New quantity for this item is updated to "+ newquantity);
+                console.log("----------------------------------------");
+
+                manager();
+            })
                 });
+                        }); 
+                    }; 
+       
+                    
+    function addNew(){
+        inquirer    
+        .prompt([{
+            message: "What item would you like to add?",
+            name: "manageritem",
+            type:"input"
+        },
+        {
+            message: "What is the price of the item you would like to add?",
+            name: "managerprice",
+            type: "input"
+        },
+        {
+            message: "What is the department of the item you would like to add?",
+            name: "managerdepartment",
+            type: "input"
+        },
+        {
+            message: "What quantity amount would you like to add?",
+            name: "managerquantity",
+            type: "input",
+            validate: function(value) {
+                if (isNaN(value) === false) {
+                    return true;
+                } else {
+                    console.log('Please enter a valid quantity number');
+                    return false;
+                }
+            }
+        }]).then(function(answer){
+         
+        connection.query("INSERT INTO products SET ?", 
+        [{product_name: answer.manageritem},
+        {department_name: answer.managerdepartment},
+        {price: answer.managerprice},
+        {stock_quantity:answer.managerquantity}], function(err,res){
+                        if (err) throw err;
 
-        }    
-};
+        console.log("New Product Added!!!")
+       viewProducts();
+            });
+                    }); 
+
+
+
+    }

@@ -2,9 +2,9 @@
 
 Week 8 Homework Assignment: Bamazon App
 
-Bamazon is an Amazon-like storefront that will take in orders from users using command line input and modify stock from the store's inventory using a My SQL database. This app can query the database for stock and determine if there is enough stock quantity to fulfill user orders. Bamazon is a command line node app, which runs on Docker Desktop server and MySQL workbench.
+Bamazon is an Amazon-like storefront that will take in orders from users using command line input and modify stock from the store's inventory using a My SQL database. This app can query the database for stock and determine if there is enough stock quantity to fulfill user orders. The user can also run manager commands to view inventory, add new products, and new stock quantities. Bamazon is a command line node app, which runs on Docker Desktop server and MySQL workbench.
 
-How to deploy this app: Clone repo - Run npm install - In the command line, run node bamazonCustomer.js.
+How to deploy this app: Clone repo - Run npm install - In the command line, run node bamazonCustomer.js and node bamazonManager.js
 
 Screenshot Video:
 
