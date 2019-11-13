@@ -7,6 +7,10 @@ Bamazon is an Amazon-like storefront that will take in orders from users using c
 How to deploy this app: Clone repo - Run npm install - In the command line, run node bamazonCustomer.js and node bamazonManager.js
 
 Screenshot Video:
+https://drive.google.com/open?id=1sBaGZ4ufm1GRYpSzYHBsnWrY00zTv3n2
+
+Screenshot Video 2:
+https://drive.google.com/open?id=1hcbhSeQ7Smk-V25OLF0GllTEDPdGWF2B
 
 Technologies Utilized: NodeJS, JavaScript, SQL, My SQL Workbench, Mysql node package manager, Inquirer node package manager.
 

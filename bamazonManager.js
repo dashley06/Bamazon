@@ -64,7 +64,6 @@ function manager(){
         function viewLow(){
             connection.query("SELECT * FROM products WHERE stock_quantity < 5", function(err, res) {
                 if (err) throw err;
-                console.log("ANSWER:", res)
                 for (var i = 0; i < res.length; i++) {
                   console.log(" - - - - - - - - - - - - - - - ");
                   console.log("item id: " + res[i].item_id);
